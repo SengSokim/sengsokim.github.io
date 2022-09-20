@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600&family=Roboto+Mono:wght@400;500;600&display=swap');
+
+:root{
+    --mainColor:#24252a;
+    --secondaryColor:#515155;
+
+    --borderColor:#c1c1c1;
+    --mainText:white;
+    --secondaryText:#cfd1d3;
+
+    --themeDotBorder: #24292e;
+    --previewBg:rgba(66, 66, 65, 0.8);
+    --previewShadow: #43464e;
+
+    --btnColor:rgb(29, 27, 27);
+}

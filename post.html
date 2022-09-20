@@ -1,0 +1,458 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Name</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        #myBtn {
+            display: none; /* Hidden by default */
+            position: fixed; /* Fixed/sticky position */
+            bottom: 20px; /* Place the button at the bottom of the page */
+            right: 30px; /* Place the button 30px from the right */
+            z-index: 99; /* Make sure it does not overlap */
+            border: none; /* Remove borders */
+            outline: none; /* Remove outline */
+            background-color: red; /* Set a background color */
+            color: white; /* Text color */
+            cursor: pointer; /* Add a mouse pointer on hover */
+            padding: 15px; /* Some padding */
+            border-radius: 10px; /* Rounded corners */
+            font-size: 18px; /* Increase font size */
+        }
+
+        #myBtn:hover {
+            background-color: #555;
+             /* Add a dark-grey background on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-wrapper">
+        <ul class="dots-wrapper">
+            <div class="browser-dot" id="dot1"></div>
+            <div class="browser-dot" id="dot2"></div>
+            <div class="browser-dot" id="dot3"></div>
+        </ul>
+        <ul class="navigation">
+            <li><a href="#">Contact</a></li>
+        </ul>
+    </div>
+    <div class="main-container">
+        
+        <h3>Before we start creating our CRUD app, we must first link our Database</h3>
+            <pre>
+                <h5 style="background-color: #24252a; color: white;">
+                    DB_CONNECTION=mysql
+                    DB_HOST=127.0.0.1
+                    DB_PORT=3306
+                    DB_DATABASE=database-name
+                    DB_USERNAME=database-user-name
+                    DB_PASSWORD=database-password
+                </h5>
+            </pre>
+        <h3>step 1 - create model and migrations</h3>
+        <pre>
+            <h5 style="background-color: #24252a; color: white;">
+                
+                -Model:
+                    cmd - php artisan make:model Post
+
+                -IN app/models/post.php add:
+                    protected $fillable = [
+                                'title', 'description'
+                        ];
+
+                -Migration:
+                    cmd - php artisan make:migration create_post_tbl 
+
+                -IN databases/migrations/create_post_tbl :
+
+                    use Illuminate\Support\Facades\Schema;
+                    public function up()
+                        {
+                            Schema::create('posts', function (Blueprint $table) {
+                                $table->id();
+                                $table->string('title');
+                                $table->text('description');
+                                $table->timestamps();
+                            });
+                        }
+
+                run cmd in the terminal to migrate the table to 
+                the database
+
+                - php artisan make:migrate 
+                
+            </h5>
+        </pre>
+        <h3>step 2 - make PostController</h3>
+        <pre>
+            <h5 style="background-color: #24252a; color: white;">
+                
+                Make controller to manage our CRUD app
+
+	            run cmd - php artisan make:controller PostController   
+
+                IN PostController add the following code:
+                
+                * Show the list of product.
+                --------------------------------------------------------------
+                public function index() {
+                    $data = Post::latest()->paginate(5);
+                    return view('posts.index',compact('data'))
+                        ->with('i', (request()->input('page', 1) - 1) * 5);
+                }
+                --------------------------------------------------------------
+                
+                * Show the form for creating a new resource.
+                --------------------------------------------------------------
+                public function create()
+                {
+                    return view('posts.create');
+                }
+                --------------------------------------------------------------
+                
+                * Store a newly created resource in storage.
+                --------------------------------------------------------------
+                public function store(Request $request)
+                {
+                    $request->validate([
+                        'title' => 'required',
+                        'description' => 'required',
+                    ]);
+                
+                    Post::create($request->all());
+                
+                    return redirect()->route('posts.index')
+                                    ->with('success','Post created successfully.');
+                }
+                --------------------------------------------------------------
+                
+                * Display the specified resource.
+                --------------------------------------------------------------
+                public function show(Post $post)
+                {
+                    return view('posts.show',compact('post'));
+                }
+                --------------------------------------------------------------
+                
+                * Show the form for editing the specified resource.
+                --------------------------------------------------------------
+                public function edit(Post $post)
+                {
+                    return view('posts.edit',compact('post'));
+                }
+                --------------------------------------------------------------
+                
+                * Update the specified resource in storage.
+                --------------------------------------------------------------
+                public function update(Request $request, Post $post)
+                {
+                    $request->validate([
+                        'title' => 'required',
+                        'description' => 'required',
+                    ]);
+                
+                    $post->update($request->all());
+                
+                    return redirect()->route('posts.index')
+                                    ->with('success','Post updated successfully');
+                }
+                --------------------------------------------------------------
+                
+                * Remove the specified resource from storage.
+                --------------------------------------------------------------
+                public function destroy(Post $post)
+                {
+                    $post->delete();
+                
+                    return redirect()->route('posts.index')
+                                    ->with('success','Post deleted successfully');
+                }
+                --------------------------------------------------------------
+            </h5>
+        </pre>
+        <h3>step 3 - create routes</h3>
+        <pre>
+            <h5 style="background-color: #24252a; color: white;">
+                IN routes/web.php create routes
+
+	            Route::resource('posts', PostController::class);
+            </h5>
+        </pre>
+        <h3>step 4 - create blade view files</h3>
+        <pre>
+            <h5 style="background-color: #24252a; color: white;">
+                IN views, create a directory called "posts" and inside the directory 
+                create blade.php files such as:
+
+                -layout.blade.php
+                -index.blade.php
+                -create.blade.php
+                -edit.blade.php
+                -show.blade.php
+
+            *inside the layout.blade.php, add the following code :
+
+            --------------------------------------------------------------
+
+                &lt;!DOCTYPE html&gt;
+                &lt;html&gt;
+                &lt;head&gt;
+                    &lt;title&gt;Laravel 8 CRUD Application - laravelcode.com&lt;/title&gt;
+                    &lt;link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/
+                    css/bootstrap.css" rel="stylesheet"&gt;
+                &lt;/head&gt;
+                &lt;body&gt;
+                
+                    &lt;div class="container"&gt;
+                        @yield('content')
+                    &lt;/div&gt;
+                
+                &lt;/body&gt;
+                &lt;/html&gt;
+
+            --------------------------------------------------------------
+
+            *inside the index.blade.php, add the following code :
+
+            --------------------------------------------------------------
+
+            @extends('posts.layout')
+                @section('content')
+                    &lt;div class="row" style="margin-top: 5rem;"&gt;
+                        &lt;div class="col-lg-12 margin-tb"&gt;
+                            &lt;div class="pull-left"&gt;
+                                &lt;h2&gt;Laravel 8 CRUD app&lt;/h2&gt;
+                            &lt;/div&gt;
+                            &lt;div class="pull-right"&gt;
+                                &lt;a class="btn btn-success" href="{{ route('posts.create') }}"&gt; 
+                                Create New Post&lt;/a&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                   
+                    @if ($message = Session::get('success'))
+                        &lt;div class="alert alert-success"&gt;
+                            &lt;p&gt;{{ $message }}&lt;/p&gt;
+                        &lt;/div&gt;
+                    @endif
+                   
+                    &lt;table class="table table-bordered"&gt;
+                        &lt;tr&gt;
+                            &lt;th&gt;No&lt;/th&gt;
+                            &lt;th&gt;Name&lt;/th&gt;
+                            &lt;th&gt;Details&lt;/th&gt;
+                            &lt;th width="280px"&gt;Action&lt;/th&gt;
+                        &lt;/tr&gt;
+                        @foreach ($data as $key =&gt; $value)
+                        &lt;tr&gt;
+                            &lt;td&gt;{{ ++$i }}&lt;/td&gt;
+                            &lt;td&gt;{{ $value-&gt;title }}&lt;/td&gt;
+                            &lt;td&gt;{{ \Str::limit($value-&gt;description, 100) }}&lt;/td&gt;
+                            &lt;td&gt;
+                                &lt;form action="{{ route('posts.destroy',$value-&gt;id) }}" 
+                                method="POST"&gt;   
+                                    &lt;a class="btn btn-info" href="{{ route('posts.show',$value-&gt;id) }}"&gt;
+                                    Show
+                                    &lt;/a&gt;    
+                                    &lt;a class="btn btn-primary" href="{{ route('posts.edit',$value-&gt;id) }}"&gt;
+                                    Edit
+                                    &lt;/a&gt;   
+                                    @csrf
+                                    @method('DELETE')      
+                                    &lt;button type="submit" class="btn btn-danger"&gt;Delete&lt;/button&gt;
+                                &lt;/form&gt;
+                            &lt;/td&gt;
+                        &lt;/tr&gt;
+                        @endforeach
+                    &lt;/table&gt;  
+                    {!! $data-&gt;links() !!}      
+                @endsection
+
+            --------------------------------------------------------------
+
+            *inside the create.blade.php, add the following code :
+
+            --------------------------------------------------------------
+            
+            @extends('posts.layout')
+                @section('content')
+                &lt;div class="row"&gt;
+                    &lt;div class="col-lg-12 margin-tb"&gt;
+                        &lt;div class="pull-left"&gt;
+                            &lt;h2&gt;Add New Product&lt;/h2&gt;
+                        &lt;/div&gt;
+                        &lt;div class="pull-right"&gt;
+                            &lt;a class="btn btn-primary" href="{{ route('posts.index') }}"&gt; Back&lt;/a&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                @if ($errors-&gt;any())
+                    &lt;div class="alert alert-danger"&gt;
+                        &lt;strong&gt;Whoops!&lt;/strong&gt; There were some problems with your input.&lt;br&gt;&lt;br&gt;
+                        &lt;ul&gt;
+                            @foreach ($errors-&gt;all() as $error)
+                                &lt;li&gt;{{ $error }}&lt;/li&gt;
+                            @endforeach
+                        &lt;/ul&gt;
+                    &lt;/div&gt;
+                @endif
+                &lt;form action="{{ route('posts.store') }}" method="POST"&gt;
+                    @csrf
+                
+                    &lt;div class="row"&gt;
+                        &lt;div class="col-xs-12 col-sm-12 col-md-12"&gt;
+                            &lt;div class="form-group"&gt;
+                                &lt;strong&gt;Title:&lt;/strong&gt;
+                                &lt;input type="text" name="title" class="form-control" 
+                                placeholder="Enter Title"&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                        &lt;div class="col-xs-12 col-sm-12 col-md-12"&gt;
+                            &lt;div class="form-group"&gt;
+                                &lt;strong&gt;Description:&lt;/strong&gt;
+                                &lt;textarea class="form-control" style="height:150px" 
+                                name="description" placeholder="Enter Description"&gt;&lt;/textarea&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                        &lt;div class="col-xs-12 col-sm-12 col-md-12 text-center"&gt;
+                                &lt;button type="submit" class="btn btn-primary"&gt;Submit&lt;/button&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                
+                &lt;/form&gt;
+            @endsection
+
+            --------------------------------------------------------------
+            
+            *inside the edit.blade.php, add the following code :
+
+            --------------------------------------------------------------
+
+            @extends('posts.layout')
+            @section('content')
+                &lt;div class="row"&gt;
+                    &lt;div class="col-lg-12 margin-tb"&gt;
+                        &lt;div class="pull-left"&gt;
+                            &lt;h2&gt;Edit Product&lt;/h2&gt;
+                        &lt;/div&gt;
+                        &lt;div class="pull-right"&gt;
+                            &lt;a class="btn btn-primary" href="{{ route('posts.index') }}"&gt; Back&lt;/a&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                @if ($errors-&gt;any())
+                    &lt;div class="alert alert-danger"&gt;
+                        &lt;strong&gt;Whoops!&lt;/strong&gt; There were some problems with your input.&lt;br&gt;&lt;br&gt;
+                        &lt;ul&gt;
+                            @foreach ($errors-&gt;all() as $error)
+                                &lt;li&gt;{{ $error }}&lt;/li&gt;
+                            @endforeach
+                        &lt;/ul&gt;
+                    &lt;/div&gt;
+                @endif
+                &lt;form action="{{ route('posts.update',$post-&gt;id) }}" method="POST"&gt;
+                    @csrf
+                    @method('PUT')           
+                    &lt;div class="row"&gt;
+                        &lt;div class="col-xs-12 col-sm-12 col-md-12"&gt;
+                            &lt;div class="form-group"&gt;
+                                &lt;strong&gt;Title:&lt;/strong&gt;
+                                &lt;input type="text" name="title" value="{{ $post-&gt;title }}" 
+                                class="form-control" placeholder="Title"&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                        &lt;div class="col-xs-12 col-sm-12 col-md-12"&gt;
+                            &lt;div class="form-group"&gt;
+                                &lt;strong&gt;Description:&lt;/strong&gt;
+                                &lt;textarea class="form-control" style="height:150px" 
+                                name="description" placeholder="Detail"&gt;{{ $post-&gt;description }}
+                                &lt;/textarea&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                        &lt;div class="col-xs-12 col-sm-12 col-md-12 text-center"&gt;
+                        &lt;button type="submit" class="btn btn-primary"&gt;Submit&lt;/button&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;            
+                &lt;/form&gt;
+            @endsection
+
+            --------------------------------------------------------------
+
+            *inside the show.blade.php, add the following code :
+
+            --------------------------------------------------------------
+
+            @extends('posts.layout')
+            @section('content')
+                &lt;div class="row"&gt;
+                    &lt;div class="col-lg-12 margin-tb"&gt;
+                        &lt;div class="pull-left"&gt;
+                            &lt;h2&gt; Show Product&lt;/h2&gt;
+                        &lt;/div&gt;
+                        &lt;div class="pull-right"&gt;
+                            &lt;a class="btn btn-primary" href="{{ route('posts.index') }}"&gt; Back&lt;/a&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;           
+                &lt;div class="row"&gt;
+                    &lt;div class="col-xs-12 col-sm-12 col-md-12"&gt;
+                        &lt;div class="form-group"&gt;
+                            &lt;strong&gt;Title:&lt;/strong&gt;
+                            {{ $post-&gt;title }}
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    &lt;div class="col-xs-12 col-sm-12 col-md-12"&gt;
+                        &lt;div class="form-group"&gt;
+                            &lt;strong&gt;Description:&lt;/strong&gt;
+                            {{ $post-&gt;description }}
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            @endsection
+
+            --------------------------------------------------------------
+            </h5>
+        </pre>
+        <h3>step 5 - run development server</h3>
+        <pre>
+            <h5 style="background-color: #24252a; color: white;">
+                run cmd - php artisan serve
+            </h5>
+        </pre>
+    </div>
+    <section class="footer">
+        <div class="nav-wrapper">
+            <ul class="dots-wrapper">
+                <p>Copyright &copy; 2022 All Rights Reserved</p>
+            </ul>
+            
+        </div>
+    </section>
+    <button onclick="topFunction()" id="myBtn" title="Go to top">Top</button>
+    <script>
+        // Get the button:
+        let mybutton = document.getElementById("myBtn");
+
+        // When the user scrolls down 20px from the top of the document, show the button
+        window.onscroll = function() {scrollFunction()};
+
+        function scrollFunction() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            mybutton.style.display = "block";
+        } else {
+            mybutton.style.display = "none";
+        }
+        }
+
+        // When the user clicks on the button, scroll to the top of the document
+        function topFunction() {
+        document.body.scrollTop = 0; // For Safari
+        document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+        }
+    </script>
+</body>
+</html>
