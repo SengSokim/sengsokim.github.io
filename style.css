@@ -271,6 +271,9 @@ h6{font-size: 16px;}
     color: #4b5156;
     font-size: 16px;
 }
+.card {
+    text-decoration: none;
+}
 #contact-form{
     display: block;
     max-width: 600px;
@@ -320,6 +323,33 @@ h6{font-size: 16px;}
     padding-right: 2em;
     margin: 10px;
 }
+.dw{
+    color: rgb(4, 175, 175);
+}
+.dw:hover{
+    color:#fff;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey; 
+    border-radius: 10px;
+  }
+   
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #5a5b5f; 
+    border-radius: 10px;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #b30000; 
+  }
 @media screen and (max-width: 1200px){
     .main-container{
         width: 95%;
