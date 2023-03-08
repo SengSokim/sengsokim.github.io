@@ -507,12 +507,19 @@ h6 {
         justify-content: center;
     }
     .greeting-wrapper h2{
-        font-size: 26px
+        font-size: 26px;
     }
     
 }
-@media screen and (max-width: 400) {
-    
+@media screen and (max-width: 500px) {
+    .greeting-wrapper h2{
+        font-size: 20px;
+    }
+}
+@media screen and (max-width: 330px) {
+    .greeting-wrapper h2{
+        font-size: 1rem;
+    }
 }
 /* animation fade left */
 .reveal {
