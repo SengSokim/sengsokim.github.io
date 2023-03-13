@@ -83,7 +83,9 @@ h6 {
     border-bottom: 1px solid var(--borderColor);
     overflow: auto;
 }
-
+.dir-normal {
+    translate: -250px 0;
+}
 .main-container {
     width: 1200px;
     margin: 0 auto;
@@ -95,7 +97,10 @@ h6 {
     justify-content: center;
     align-content: center;
 }
-
+.greeting-wrapper h2 {
+    text-align: center;
+    margin-bottom: 3rem;
+}
 .intro-wrapper {
     background-color: var(--secondaryColor);
     border: 1px solid var(--borderColor);
@@ -510,6 +515,10 @@ h6 {
         font-size: 26px;
     }
     
+}
+#down-arrow{
+    text-align: center;
+    display:block;
 }
 @media screen and (max-width: 500px) {
     .greeting-wrapper h2{
